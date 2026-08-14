@@ -669,9 +669,9 @@ const DEFAULT_STATE = {
     { id: "tx3", assetName: "TCS Dividend", type: "DIVIDEND", units: 0, pricePerUnit: 0, amount: 2800, date: Date.now() - 86400000 * 35, notes: "Interim dividend credited" }
   ],
   goals: [
-    { id: "g1", name: "Early Retirement (FIRE)", category: "RETIREMENT", targetAmount: 25000000, currentAmount: 8200000, targetDate: Date.now() + 1000L * 60 * 60 * 24 * 365 * 8, notes: "25x annual expenses target" },
-    { id: "g2", name: "Emergency Fund (12 Mos)", category: "EMERGENCY_FUND", targetAmount: 1000000, currentAmount: 920000, targetDate: Date.now() + 1000L * 60 * 60 * 24 * 120, notes: "Liquid fixed deposits" },
-    { id: "g3", name: "New Luxury EV", category: "NEW_CAR", targetAmount: 2500000, currentAmount: 1450000, targetDate: Date.now() + 1000L * 60 * 60 * 24 * 365 * 2, notes: "Targeting Tesla / Ioniq" }
+    { id: "g1", name: "Early Retirement (FIRE)", category: "RETIREMENT", targetAmount: 25000000, currentAmount: 8200000, targetDate: Date.now() + 1000 * 60 * 60 * 24 * 365 * 8, notes: "25x annual expenses target" },
+    { id: "g2", name: "Emergency Fund (12 Mos)", category: "EMERGENCY_FUND", targetAmount: 1000000, currentAmount: 920000, targetDate: Date.now() + 1000 * 60 * 60 * 24 * 120, notes: "Liquid fixed deposits" },
+    { id: "g3", name: "New Luxury EV", category: "NEW_CAR", targetAmount: 2500000, currentAmount: 1450000, targetDate: Date.now() + 1000 * 60 * 60 * 24 * 365 * 2, notes: "Targeting Tesla / Ioniq" }
   ],
   journals: [
     { id: "j1", title: "Market Volatility Strategy & SIP Rebalance", content: "Maintained disciplined monthly SIPs. Increased allocation to large-cap equity on corrections. Cash balance kept at 10% for strategic opportunities.", tags: ["Strategy", "Discipline"], date: Date.now() - 86400000 * 4 }
@@ -1853,9 +1853,13 @@ function submitJournal(e) {
 }
 
 // Initial boot
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    renderView();
+  });
+} else {
   renderView();
-});
+}
 </script>
 </body>
 </html>

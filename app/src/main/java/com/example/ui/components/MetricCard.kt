@@ -25,21 +25,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.theme.CosmicSurface
 import com.example.ui.theme.EmeraldProfit
 import com.example.ui.theme.EmeraldProfitBg
-import com.example.ui.theme.IndigoPrimary
+import com.example.ui.theme.GlassBorderSubtle
+import com.example.ui.theme.GlassSurfaceElevated
+import com.example.ui.theme.LunarCyan
+import com.example.ui.theme.MoonSilver
+import com.example.ui.theme.MoonStarlight
+import com.example.ui.theme.MoonSubtle
 import com.example.ui.theme.RoseLoss
 import com.example.ui.theme.RoseLossBg
-import com.example.ui.theme.SlateBorderSubtle
-import com.example.ui.theme.SlateSurface
-import com.example.ui.theme.SlateTextMuted
-import com.example.ui.theme.SlateTextPrimary
-import com.example.ui.theme.SlateTextSecondary
 
 @Composable
 fun WealthMetricCard(
@@ -50,14 +52,23 @@ fun WealthMetricCard(
     badgeText: String? = null,
     isPositiveBadge: Boolean? = null,
     icon: ImageVector? = null,
-    containerColor: Color = SlateSurface
+    containerColor: Color = Color(0x22172146)
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
-        border = BorderStroke(1.dp, SlateBorderSubtle),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        border = BorderStroke(
+            1.dp,
+            Brush.verticalGradient(
+                colors = listOf(
+                    Color(0x40FFFFFF), // Specular light reflection on top edge
+                    Color(0x15FFFFFF),
+                    Color(0x08FFFFFF)
+                )
+            )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -68,28 +79,36 @@ fun WealthMetricCard(
                 Text(
                     text = title.uppercase(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = SlateTextMuted,
+                    color = MoonSilver,
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp,
-                    letterSpacing = 0.8.sp
+                    letterSpacing = 1.sp
                 )
                 if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = IndigoPrimary,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0x1FFFFFFF)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = LunarCyan,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.ExtraBold,
-                color = SlateTextPrimary,
+                color = MoonStarlight,
                 fontSize = 18.sp
             )
 
@@ -100,19 +119,19 @@ fun WealthMetricCard(
                         val badgeBg = when (isPositiveBadge) {
                             true -> EmeraldProfitBg
                             false -> RoseLossBg
-                            null -> MaterialTheme.colorScheme.surfaceVariant
+                            null -> Color(0x20FFFFFF)
                         }
                         val badgeColor = when (isPositiveBadge) {
                             true -> EmeraldProfit
                             false -> RoseLoss
-                            null -> SlateTextSecondary
+                            null -> MoonSilver
                         }
 
                         Row(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(badgeBg)
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                                .padding(horizontal = 6.dp, vertical = 3.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             if (isPositiveBadge == true) {
@@ -148,7 +167,7 @@ fun WealthMetricCard(
                         Text(
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
-                            color = SlateTextSecondary,
+                            color = MoonSubtle,
                             fontSize = 11.sp
                         )
                     }
@@ -157,4 +176,5 @@ fun WealthMetricCard(
         }
     }
 }
+
 

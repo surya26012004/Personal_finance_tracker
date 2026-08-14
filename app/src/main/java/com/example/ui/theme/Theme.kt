@@ -12,63 +12,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = IndigoLight,
-    onPrimary = Color.White,
-    primaryContainer = IndigoDark,
-    onPrimaryContainer = IndigoTextLight,
-    secondary = WarmOrange,
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFF431407),
-    onSecondaryContainer = Color(0xFFFFEDD5),
-    tertiary = NaturalTeal,
-    onTertiary = Color.White,
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
+    primary = LunarIndigo,
+    onPrimary = CosmicVoid,
+    primaryContainer = LunarIndigoDark,
+    onPrimaryContainer = MoonStarlight,
+    secondary = LunarCyan,
+    onSecondary = CosmicVoid,
+    secondaryContainer = LunarCyanGlow,
+    onSecondaryContainer = LunarCyan,
+    tertiary = LunarGold,
+    onTertiary = CosmicVoid,
+    background = CosmicVoid,
+    onBackground = MoonStarlight,
     surface = DarkSurface,
-    onSurface = DarkOnSurface,
+    onSurface = MoonStarlight,
     surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
-    outline = DarkBorder,
+    onSurfaceVariant = MoonSilver,
+    outline = GlassBorderSubtle,
     error = RoseLoss,
-    onError = Color.White
+    onError = CosmicVoid
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = IndigoPrimary,
-    onPrimary = Color.White,
-    primaryContainer = IndigoContainer,
-    onPrimaryContainer = IndigoPrimary,
-    secondary = WarmOrange,
-    onSecondary = Color.White,
-    secondaryContainer = WarmOrangeBg,
-    onSecondaryContainer = WarmOrange,
-    tertiary = NaturalBlue,
-    onTertiary = Color.White,
-    background = LightBackground,
-    onBackground = LightOnBackground,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightBorder,
-    error = RoseLoss,
-    onError = Color.White
-)
+private val LightColorScheme = DarkColorScheme // Moonlit aesthetic is intrinsically celestial midnight & liquid glass
 
 @Composable
 fun WealthWiseTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Keep Natural Tones brand palette
+    darkTheme: Boolean = true, // Default to celestial Moonlit theme
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = DarkColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -76,4 +49,5 @@ fun WealthWiseTheme(
         content = content
     )
 }
+
 

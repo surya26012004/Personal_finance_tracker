@@ -29,6 +29,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Brightness3
+import androidx.compose.material.icons.filled.NightlightRound
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
@@ -52,6 +55,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -77,9 +82,20 @@ import com.example.ui.screens.LoansScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.TransactionsScreen
 import com.example.ui.screens.WatchlistScreen
+import com.example.ui.theme.CosmicMidnight
+import com.example.ui.theme.CosmicVoid
 import com.example.ui.theme.EmeraldProfit
+import com.example.ui.theme.GlassBorderSubtle
+import com.example.ui.theme.GlassSurfaceElevated
 import com.example.ui.theme.IndigoDark
 import com.example.ui.theme.IndigoPrimary
+import com.example.ui.theme.LunarCyan
+import com.example.ui.theme.LunarCyanGlow
+import com.example.ui.theme.LunarGold
+import com.example.ui.theme.LunarIndigo
+import com.example.ui.theme.MoonMuted
+import com.example.ui.theme.MoonSilver
+import com.example.ui.theme.MoonStarlight
 import com.example.ui.theme.RoseLoss
 import com.example.ui.theme.SlateBorder
 import com.example.ui.theme.SlateBorderSubtle
@@ -127,7 +143,7 @@ fun WealthWiseApp(viewModel: WealthViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = CosmicVoid,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             WealthBottomNavBar(
@@ -137,117 +153,131 @@ fun WealthWiseApp(viewModel: WealthViewModel) {
         },
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            CosmicMidnight,
+                            CosmicVoid,
+                            Color(0xFF0A0F24)
+                        )
+                    )
+                )
                 .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            // Natural Tones App Header Bar
-            WealthAppHeader(
-                currentTab = state.currentTab,
-                netWorth = state.portfolioSummary.netWorth,
-                todayPL = state.portfolioSummary.todayProfitLoss,
-                todayPct = state.portfolioSummary.todayPercentageChange,
-                currencySymbol = state.settings.currencySymbol
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.statusBars)
+            ) {
+                // Moonlit Liquid Glass App Header Bar
+                WealthAppHeader(
+                    currentTab = state.currentTab,
+                    netWorth = state.portfolioSummary.netWorth,
+                    todayPL = state.portfolioSummary.todayProfitLoss,
+                    todayPct = state.portfolioSummary.todayPercentageChange,
+                    currencySymbol = state.settings.currencySymbol
+                )
 
-            // Dynamic Category/Tab scroll bar
-            WealthTopScrollableNav(
-                currentTab = state.currentTab,
-                onTabSelected = { viewModel.selectTab(it) }
-            )
+                // Frosted Top Category Navigation Pills
+                WealthTopScrollableNav(
+                    currentTab = state.currentTab,
+                    onTabSelected = { viewModel.selectTab(it) }
+                )
 
-            // Screen Body with animated fade transition
-            AnimatedContent(
-                targetState = state.currentTab,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "TabContent"
-            ) { targetTab ->
-                when (targetTab) {
-                    WealthTab.DASHBOARD -> {
-                        DashboardScreen(
-                            state = state,
-                            onNavigateTab = { viewModel.selectTab(it) },
-                            onTimeRangeSelected = { viewModel.selectTimeRange(it) },
-                            onQuickAddHolding = { showQuickAddHolding = true },
-                            onQuickAddTransaction = { showQuickAddTx = true }
-                        )
-                    }
-                    WealthTab.PORTFOLIO -> {
-                        HoldingsScreen(
-                            state = state,
-                            onAddHolding = { viewModel.addHolding(it) },
-                            onUpdateHolding = { viewModel.updateHolding(it) },
-                            onDeleteHolding = { viewModel.deleteHolding(it) }
-                        )
-                    }
-                    WealthTab.DAILY_UPDATE -> {
-                        DailyUpdateScreen(
-                            state = state,
-                            onInputChange = { id, input -> viewModel.updateDailyInputChange(id, input) },
-                            onApplyUniformPercent = { viewModel.applyUniformPercentChange(it) },
-                            onDateSelected = { viewModel.setSelectedDailyDate(it) },
-                            onSaveAll = { viewModel.saveAllDailyUpdates() }
-                        )
-                    }
-                    WealthTab.TRANSACTIONS -> {
-                        TransactionsScreen(
-                            state = state,
-                            onAddTransaction = { viewModel.addTransaction(it) },
-                            onDeleteTransaction = { viewModel.deleteTransaction(it) }
-                        )
-                    }
-                    WealthTab.CASHFLOW -> {
-                        CashflowScreen(
-                            state = state,
-                            onAddCashflow = { viewModel.addCashflow(it) },
-                            onDeleteCashflow = { viewModel.deleteCashflow(it) }
-                        )
-                    }
-                    WealthTab.GOALS -> {
-                        GoalsScreen(
-                            state = state,
-                            onAddGoal = { viewModel.addGoal(it) },
-                            onContributeToGoal = { goal, amt -> viewModel.contributeToGoal(goal, amt) },
-                            onDeleteGoal = { viewModel.deleteGoal(it) }
-                        )
-                    }
-                    WealthTab.ANALYTICS -> {
-                        DailyAnalyticsScreen(
-                            state = state,
-                            onTimeRangeSelected = { viewModel.selectTimeRange(it) }
-                        )
-                    }
-                    WealthTab.LOANS -> {
-                        LoansScreen(
-                            state = state,
-                            onAddLoan = { viewModel.addLoan(it) },
-                            onRecordEmiPayment = { loan, amt -> viewModel.recordEmiPayment(loan, amt) },
-                            onDeleteLoan = { viewModel.deleteLoan(it) }
-                        )
-                    }
-                    WealthTab.WATCHLIST -> {
-                        WatchlistScreen(
-                            state = state,
-                            onAddWatchlist = { viewModel.addWatchlistItem(it) },
-                            onDeleteWatchlist = { viewModel.deleteWatchlistItem(it) },
-                            onConvertHolding = { item, qty, price -> viewModel.convertWatchlistToHolding(item, qty, price) }
-                        )
-                    }
-                    WealthTab.JOURNAL -> {
-                        JournalScreen(
-                            state = state,
-                            onAddJournal = { viewModel.addJournalEntry(it) },
-                            onDeleteJournal = { viewModel.deleteJournalEntry(it) }
-                        )
-                    }
-                    WealthTab.SETTINGS -> {
-                        SettingsScreen(
-                            state = state,
-                            onUpdateCurrency = { c, s -> viewModel.updateCurrency(c, s) },
-                            onResetData = { viewModel.loadSampleData() }
-                        )
+                // Screen Body with animated fade transition
+                AnimatedContent(
+                    targetState = state.currentTab,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    label = "TabContent"
+                ) { targetTab ->
+                    when (targetTab) {
+                        WealthTab.DASHBOARD -> {
+                            DashboardScreen(
+                                state = state,
+                                onNavigateTab = { viewModel.selectTab(it) },
+                                onTimeRangeSelected = { viewModel.selectTimeRange(it) },
+                                onQuickAddHolding = { showQuickAddHolding = true },
+                                onQuickAddTransaction = { showQuickAddTx = true }
+                            )
+                        }
+                        WealthTab.PORTFOLIO -> {
+                            HoldingsScreen(
+                                state = state,
+                                onAddHolding = { viewModel.addHolding(it) },
+                                onUpdateHolding = { viewModel.updateHolding(it) },
+                                onDeleteHolding = { viewModel.deleteHolding(it) }
+                            )
+                        }
+                        WealthTab.DAILY_UPDATE -> {
+                            DailyUpdateScreen(
+                                state = state,
+                                onInputChange = { id, input -> viewModel.updateDailyInputChange(id, input) },
+                                onApplyUniformPercent = { viewModel.applyUniformPercentChange(it) },
+                                onDateSelected = { viewModel.setSelectedDailyDate(it) },
+                                onSaveAll = { viewModel.saveAllDailyUpdates() }
+                            )
+                        }
+                        WealthTab.TRANSACTIONS -> {
+                            TransactionsScreen(
+                                state = state,
+                                onAddTransaction = { viewModel.addTransaction(it) },
+                                onDeleteTransaction = { viewModel.deleteTransaction(it) }
+                            )
+                        }
+                        WealthTab.CASHFLOW -> {
+                            CashflowScreen(
+                                state = state,
+                                onAddCashflow = { viewModel.addCashflow(it) },
+                                onDeleteCashflow = { viewModel.deleteCashflow(it) }
+                            )
+                        }
+                        WealthTab.GOALS -> {
+                            GoalsScreen(
+                                state = state,
+                                onAddGoal = { viewModel.addGoal(it) },
+                                onContributeToGoal = { goal, amt -> viewModel.contributeToGoal(goal, amt) },
+                                onDeleteGoal = { viewModel.deleteGoal(it) }
+                            )
+                        }
+                        WealthTab.ANALYTICS -> {
+                            DailyAnalyticsScreen(
+                                state = state,
+                                onTimeRangeSelected = { viewModel.selectTimeRange(it) }
+                            )
+                        }
+                        WealthTab.LOANS -> {
+                            LoansScreen(
+                                state = state,
+                                onAddLoan = { viewModel.addLoan(it) },
+                                onRecordEmiPayment = { loan, amt -> viewModel.recordEmiPayment(loan, amt) },
+                                onDeleteLoan = { viewModel.deleteLoan(it) }
+                            )
+                        }
+                        WealthTab.WATCHLIST -> {
+                            WatchlistScreen(
+                                state = state,
+                                onAddWatchlist = { viewModel.addWatchlistItem(it) },
+                                onDeleteWatchlist = { viewModel.deleteWatchlistItem(it) },
+                                onConvertHolding = { item, qty, price -> viewModel.convertWatchlistToHolding(item, qty, price) }
+                            )
+                        }
+                        WealthTab.JOURNAL -> {
+                            JournalScreen(
+                                state = state,
+                                onAddJournal = { viewModel.addJournalEntry(it) },
+                                onDeleteJournal = { viewModel.deleteJournalEntry(it) }
+                            )
+                        }
+                        WealthTab.SETTINGS -> {
+                            SettingsScreen(
+                                state = state,
+                                onUpdateCurrency = { c, s -> viewModel.updateCurrency(c, s) },
+                                onResetData = { viewModel.loadSampleData() }
+                            )
+                        }
                     }
                 }
             }
@@ -294,40 +324,61 @@ fun WealthAppHeader(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        border = BorderStroke(1.dp, SlateBorderSubtle)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(24.dp)),
+        color = Color(0x33121A3A), // Liquid frosted surface
+        shadowElevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            Brush.verticalGradient(
+                colors = listOf(
+                    Color(0x4DFFFFFF), // Upper rim specular highlight
+                    Color(0x1AFFFFFF),
+                    Color(0x1038BDF8)
+                )
+            )
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .padding(horizontal = 18.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(
-                    text = "NET WORTH",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = SlateTextSecondary,
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.NightlightRound,
+                        contentDescription = null,
+                        tint = LunarCyan,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "TOTAL VALUATION",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MoonSilver,
+                        letterSpacing = 1.2.sp,
+                        fontSize = 10.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = FinancialCalculator.formatCurrency(netWorth, currencySymbol, false),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.ExtraBold,
-                    color = SlateTextPrimary
+                    color = MoonStarlight,
+                    letterSpacing = (-0.5).sp
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = if (isTodayPos) Icons.Default.TrendingUp else Icons.Default.TrendingDown,
                         contentDescription = null,
                         tint = if (isTodayPos) EmeraldProfit else RoseLoss,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(13.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     val sign = if (todayPL > 0) "+" else ""
@@ -341,22 +392,38 @@ fun WealthAppHeader(
                 }
             }
 
-            // Person / Avatar Circular Badge
+            // Glowing Liquid Glass Moon Icon Badge
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(46.dp)
                     .clip(CircleShape)
-                    .background(SlateSurfaceVariant),
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                LunarCyan.copy(alpha = 0.35f),
+                                LunarIndigo.copy(alpha = 0.2f),
+                                Color(0x10FFFFFF)
+                            )
+                        )
+                    )
+                    .drawBehind {
+                        drawCircle(
+                            color = Color(0x40FFFFFF),
+                            radius = size.minDimension / 2,
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx())
+                        )
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "User Profile",
-                    tint = SlateTextSecondary,
-                    modifier = Modifier.size(24.dp)
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Moonlit Aura",
+                    tint = LunarCyan,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
     }
 }
+
 
